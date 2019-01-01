@@ -38,11 +38,17 @@ do
    mkdir -p $TARGET
    cp -r /tmp/wordpress $TARGET
    chown -R www-data:www-data $TARGET
-   vhost-setup $USER
+   vhost-setup $Domain $USER $TARGET
 done
 
 vhost-setup () {
-
-echo "Not yet implemented - need to do it manually"
+# result will be subdomain.example.com will point to /home/user/public_html
+Domain=$1
+sudomain=$2
+host_dir=$3
+# found a nice script that I hope will set these up easily.
+wget -O virtualhost https://raw.githubusercontent.com/RoverWire/virtualhost/master/virtualhost.sh
+chmod +x virtualhost
+bash virtualhost create $subdomain.$Domain $host_dir
 
 }
