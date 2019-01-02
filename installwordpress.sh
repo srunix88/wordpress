@@ -6,7 +6,7 @@
 DomainsRootHome=/home
 WPDIR=public_html
 Domain=io1cloud.homedepot.com
-SITES="site5 site6"
+SITES="site7 site8"
 WP_DB=examplewp
 DB_PW=password
 
@@ -89,13 +89,14 @@ do
    cp -r /tmp/public_html $TARGET
    chown -R www-data:www-data $TARGET
    cd $TARGET/public_html
+   cat /dev/null > /tmp/makeusers.sql
    cat  << EOF >> /tmp/makeusers.sql
-   create user '${site}wp'@'localhost' IDENTIFIED by 'password';
-   create database ${site}wp
-   GRANT ALL PRIVILEGES ON ${site}wp.* TO '${site}wp'@'localhost';
-   FLUSH PRIVILEGES;
+create user '${site}wp'@'localhost' IDENTIFIED by 'password';
+create database ${site}wp
+GRANT ALL PRIVILEGES ON ${site}wp.* TO '${site}wp'@'localhost';
+FLUSH PRIVILEGES;
 EOF
-   
+   mysql < /tmp/makeusers.sql   
    #sudo -u ncfisher -i -- configwp
    vhost-setup $Domain $site $TARGET
 done
