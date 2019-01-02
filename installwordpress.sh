@@ -45,7 +45,7 @@ done
 vhost-setup () {
 # result will be subdomain.example.com will point to /home/user/public_html
 Domain=$1
-sudomain=$2
+subdomain=$2
 host_dir=$3
 # found a nice script that I hope will set these up easily.
 wget -O virtualhost https://raw.githubusercontent.com/RoverWire/virtualhost/master/virtualhost.sh
