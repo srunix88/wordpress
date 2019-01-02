@@ -73,7 +73,8 @@ bash virtualhost create $subdomain.$Domain $host_dir
 
 configwp () {
 
-echo "cd $DomainsRootHome/$User" > /tmp/configwp.sh 
+site=$1
+echo "cd $DomainsRootHome/$site/public_html" > /tmp/configwp.sh 
 echo "wp core config --dbname=${site}wp --dbuser=${site}wp --dbpass=$DB_PW --dbhost=localhost --dbprefix=wp_" >> /tmp/configwp.sh
 
 }
@@ -96,7 +97,7 @@ GRANT ALL PRIVILEGES ON ${site}wp.* TO '${site}wp'@'localhost';
 FLUSH PRIVILEGES;
 EOF
    mysql < /tmp/makeusers.sql   
-   configwp 
+   configwp $site 
    sudo -u ncfisher -i -- bash /tmp/configwp.sh
    vhost-setup $Domain $site $TARGET
 done
