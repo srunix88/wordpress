@@ -6,7 +6,7 @@
 DomainsRootHome=/home
 WPDIR=public_html
 Domain=io1cloud.homedepot.com
-SITES="site1 site2"
+SITES="site5 site6"
 WP_DB=examplewp
 DB_PW=password
 
@@ -45,7 +45,10 @@ download_wp() {
   WordPress_LOCATION='http://wordpress.org/latest.tar.gz'
   wget --no-check-certificate $WordPress_LOCATION -O /tmp/wordpress.tar.gz
   tar -xz -C /tmp -f /tmp/wordpress.tar.gz
-  mv /tmp/wordpress /tmp/public_html
+  if [ ! /tmp/public_html/install.php ] 
+  then
+    mv /tmp/wordpress /tmp/public_html
+  fi
 } 
 
 
@@ -59,8 +62,11 @@ Domain=$1
 subdomain=$2
 host_dir=$3
 # found a nice script that I hope will set these up easily.
-wget -O virtualhost https://raw.githubusercontent.com/RoverWire/virtualhost/master/virtualhost.sh
-chmod +x virtualhost
+if [ ! -f virtualhost ]
+then
+  wget -O virtualhost https://raw.githubusercontent.com/RoverWire/virtualhost/master/virtualhost.sh
+  chmod +x virtualhost
+fi
 bash virtualhost create $subdomain.$Domain $host_dir
 
 }
@@ -83,15 +89,15 @@ do
    cp -r /tmp/public_html $TARGET
    chown -R www-data:www-data $TARGET
    cd $TARGET/public_html
-   mysql << EOF
+   cat  << EOF >> /tmp/makeusers.sql
    create user '${site}wp'@'localhost' IDENTIFIED by 'password';
    create database ${site}wp
    GRANT ALL PRIVILEGES ON ${site}wp.* TO '${site}wp'@'localhost';
    FLUSH PRIVILEGES;
 EOF
    
-   sudo -u ncfisher -i -- configwp
-   vhost-setup $Domain $User $TARGET
+   #sudo -u ncfisher -i -- configwp
+   vhost-setup $Domain $site $TARGET
 done
 
 }
