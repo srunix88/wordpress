@@ -6,7 +6,7 @@
 DomainsRootHome=/home
 WPDIR=public_html
 Domain=io1cloud.homedepot.com
-SITES="site9 site10"
+SITES="www4 www5"
 WP_DB=examplewp
 DB_PW=password
 
@@ -73,9 +73,8 @@ bash virtualhost create $subdomain.$Domain $host_dir
 
 configwp () {
 
-cd $DomainsRootHome/$User
-pwd
-wp core config --dbname=${site}wp --dbuser=${site}wp --dbpass=$DB_PW --dbhost=localhost --dbprefix=wp_
+echo "cd $DomainsRootHome/$User" > /tmp/configwp.sh 
+echo "wp core config --dbname=${site}wp --dbuser=${site}wp --dbpass=$DB_PW --dbhost=localhost --dbprefix=wp_" >> /tmp/configwp.sh
 
 }
 
@@ -97,7 +96,8 @@ GRANT ALL PRIVILEGES ON ${site}wp.* TO '${site}wp'@'localhost';
 FLUSH PRIVILEGES;
 EOF
    mysql < /tmp/makeusers.sql   
-   #sudo -u ncfisher -i -- configwp
+   configwp 
+   sudo -u ncfisher -i -- bash /tmp/configwp.sh
    vhost-setup $Domain $site $TARGET
 done
 
