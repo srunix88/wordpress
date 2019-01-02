@@ -53,27 +53,6 @@ addshell() {
        	useradd -u 555 -g 33 -s /bin/bash -d /home/ncfisher -m ncfisher
 }
 
-configure_sites() {
-for site in $SITES
-do
-   TARGET=$DomainsRootHome/$site
-   mkdir -p $TARGET
-   cp -r /tmp/public_html $TARGET
-   chown -R www-data:www-data $TARGET
-   cd $TARGET/public_html
-   mysql << EOF
-   create user '${site}wp'@'localhost' IDENTIFIED by 'password';
-   create database ${site}wp
-   GRANT ALL PRIVILEGES ON ${site}wp TO '${site}wp'@'localhost';
-   FLUSH PRIVILEGES;
-EOF
-   
-   sudo -u ncfisher -i -- configwp
-   #vhost-setup $Domain $User $TARGET
-done
-
-}
-
 vhost-setup () {
 # result will be subdomain.example.com will point to /home/user/public_html
 Domain=$1
@@ -94,8 +73,32 @@ wp core config --dbname=${site}wp --dbuser=${site}wp --dbpass=$DB_PW --dbhost=lo
 
 }
 
+
+
+configure_sites() {
+for site in $SITES
+do
+   TARGET=$DomainsRootHome/$site
+   mkdir -p $TARGET
+   cp -r /tmp/public_html $TARGET
+   chown -R www-data:www-data $TARGET
+   cd $TARGET/public_html
+   mysql << EOF
+   create user '${site}wp'@'localhost' IDENTIFIED by 'password';
+   create database ${site}wp
+   GRANT ALL PRIVILEGES ON ${site}wp.* TO '${site}wp'@'localhost';
+   FLUSH PRIVILEGES;
+EOF
+   
+   sudo -u ncfisher -i -- configwp
+   vhost-setup $Domain $User $TARGET
+done
+
+}
+
+
 #install_software
-#download_wp
+download_wp
 # add_shell
 configure_sites
 
