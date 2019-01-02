@@ -6,7 +6,7 @@
 DomainsRootHome=/home
 WPDIR=public_html
 Domain=io1cloud.homedepot.com
-SITES="site7 site8"
+SITES="site9 site10"
 WP_DB=examplewp
 DB_PW=password
 
@@ -42,11 +42,11 @@ install_software() {
 }
 
 download_wp() {
-  WordPress_LOCATION='http://wordpress.org/latest.tar.gz'
-  wget --no-check-certificate $WordPress_LOCATION -O /tmp/wordpress.tar.gz
-  tar -xz -C /tmp -f /tmp/wordpress.tar.gz
-  if [ ! /tmp/public_html/install.php ] 
+  if [ ! -f /tmp/public_html/index.php ] 
   then
+    WordPress_LOCATION='http://wordpress.org/latest.tar.gz'
+    wget --no-check-certificate $WordPress_LOCATION -O /tmp/wordpress.tar.gz
+    tar -xz -C /tmp -f /tmp/wordpress.tar.gz
     mv /tmp/wordpress /tmp/public_html
   fi
 } 
@@ -92,7 +92,7 @@ do
    cat /dev/null > /tmp/makeusers.sql
    cat  << EOF >> /tmp/makeusers.sql
 create user '${site}wp'@'localhost' IDENTIFIED by 'password';
-create database ${site}wp
+create database ${site}wp;
 GRANT ALL PRIVILEGES ON ${site}wp.* TO '${site}wp'@'localhost';
 FLUSH PRIVILEGES;
 EOF
