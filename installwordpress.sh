@@ -6,8 +6,9 @@
 DomainsRootHome=/home
 WPDIR=public_html
 Domain=example.com
-WP_USERS="user1wp user2wp user3wp user4wp"
+WP_USERS="user1 user2 user3 user4"
 WP_DB=examplewp
+DB_PW=password
 
 if ! host -t a google.com 
 then 
@@ -33,12 +34,15 @@ WordPress_LOCATION='http://wordpress.org/latest.tar.gz'
 wget --no-check-certificate $WordPress_LOCATION -O /tmp/wordpress.tar.gz
 tar -xz -C /tmp -f /tmp/wordpress.tar.gz
 
+useradd -u 33 -g 33 -s /bin/bash -d /home/ncfisher -m ncfisher
+
 for User in $WP_USERS
 do
    TARGET=$DomainsRootHome/$User/$WPDIR
    mkdir -p $TARGET
    cp -r /tmp/wordpress $TARGET
    chown -R www-data:www-data $TARGET
+   wp core config --dbname=${User}wp --dbuser=${User}wp --dbpass=$DB_PW --dbhost=localhost --dbprefix=wp_
    vhost-setup $Domain $User $TARGET
 done
 
