@@ -35,11 +35,11 @@ tar -xz -C /tmp -f /tmp/wordpress.tar.gz
 
 for User in $WP_USERS
 do
-   TARGET=$DomainsRootHome/$USER/$WPDIR
+   TARGET=$DomainsRootHome/$User/$WPDIR
    mkdir -p $TARGET
    cp -r /tmp/wordpress $TARGET
    chown -R www-data:www-data $TARGET
-   vhost-setup $Domain $USER $TARGET
+   vhost-setup $Domain $User $TARGET
 done
 
 vhost-setup () {
