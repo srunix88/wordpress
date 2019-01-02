@@ -6,7 +6,7 @@
 DomainsRootHome=/home
 WPDIR=public_html
 Domain=io1cloud.homedepot.com
-SITES="www4 www5"
+SITES="www5 www6"
 WP_DB=examplewp
 DB_PW=password
 
@@ -99,7 +99,7 @@ EOF
    mysql < /tmp/makeusers.sql   
    configwp $site 
    sudo -u ncfisher -i -- bash /tmp/configwp.sh
-   vhost-setup $Domain $site $TARGET
+   vhost-setup $Domain $site $TARGET/$WPDIR
 done
 
 }
