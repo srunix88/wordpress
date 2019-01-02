@@ -6,7 +6,7 @@
 DomainsRootHome=/home
 WPDIR=public_html
 Domain=io1cloud.homedepot.com
-SITES="site1 site2"
+SITES="www5 www6"
 WP_DB=examplewp
 DB_PW=password
 
@@ -42,10 +42,13 @@ install_software() {
 }
 
 download_wp() {
-  WordPress_LOCATION='http://wordpress.org/latest.tar.gz'
-  wget --no-check-certificate $WordPress_LOCATION -O /tmp/wordpress.tar.gz
-  tar -xz -C /tmp -f /tmp/wordpress.tar.gz
-  mv /tmp/wordpress /tmp/public_html
+  if [ ! -f /tmp/public_html/index.php ] 
+  then
+    WordPress_LOCATION='http://wordpress.org/latest.tar.gz'
+    wget --no-check-certificate $WordPress_LOCATION -O /tmp/wordpress.tar.gz
+    tar -xz -C /tmp -f /tmp/wordpress.tar.gz
+    mv /tmp/wordpress /tmp/public_html
+  fi
 } 
 
 
@@ -59,17 +62,20 @@ Domain=$1
 subdomain=$2
 host_dir=$3
 # found a nice script that I hope will set these up easily.
-wget -O virtualhost https://raw.githubusercontent.com/RoverWire/virtualhost/master/virtualhost.sh
-chmod +x virtualhost
+if [ ! -f virtualhost ]
+then
+  wget -O virtualhost https://raw.githubusercontent.com/RoverWire/virtualhost/master/virtualhost.sh
+  chmod +x virtualhost
+fi
 bash virtualhost create $subdomain.$Domain $host_dir
 
 }
 
 configwp () {
 
-cd $DomainsRootHome/$User
-pwd
-wp core config --dbname=${site}wp --dbuser=${site}wp --dbpass=$DB_PW --dbhost=localhost --dbprefix=wp_
+site=$1
+echo "cd $DomainsRootHome/$site/public_html" > /tmp/configwp.sh 
+echo "wp core config --dbname=${site}wp --dbuser=${site}wp --dbpass=$DB_PW --dbhost=localhost --dbprefix=wp_" >> /tmp/configwp.sh
 
 }
 
@@ -83,15 +89,17 @@ do
    cp -r /tmp/public_html $TARGET
    chown -R www-data:www-data $TARGET
    cd $TARGET/public_html
-   mysql << EOF
-   create user '${site}wp'@'localhost' IDENTIFIED by 'password';
-   create database ${site}wp
-   GRANT ALL PRIVILEGES ON ${site}wp.* TO '${site}wp'@'localhost';
-   FLUSH PRIVILEGES;
+   cat /dev/null > /tmp/makeusers.sql
+   cat  << EOF >> /tmp/makeusers.sql
+create user '${site}wp'@'localhost' IDENTIFIED by 'password';
+create database ${site}wp;
+GRANT ALL PRIVILEGES ON ${site}wp.* TO '${site}wp'@'localhost';
+FLUSH PRIVILEGES;
 EOF
-   
-   sudo -u ncfisher -i -- configwp
-   vhost-setup $Domain $User $TARGET
+   mysql < /tmp/makeusers.sql   
+   configwp $site 
+   sudo -u ncfisher -i -- bash /tmp/configwp.sh
+   vhost-setup $Domain $site $TARGET/$WPDIR
 done
 
 }
