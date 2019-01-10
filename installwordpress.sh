@@ -3,13 +3,20 @@
 # Ubuntu 16_04 install from scratch
 # Run this script as root or with sudo.
 
+### Change the domain name to your domain that you manage in DNS.
+### The URL will be a combination of $site.$domain once it is all working
+### you can do multiple sites in one set up.... 
+### As of 01/10/2019 I am still working out the kinks.
+### Also, I write directly to master and am not versioning this yet. Use at your own risk.
+
 DomainsRootHome=/home
 WPDIR=public_html
-Domain=io1cloud.homedepot.com
-SITES="www5 www6"
-WP_DB=examplewp
+Domain=example.com
+SITES="www5"
 DB_PW=password
 
+dnsconfig()  {
+# initial install of VM on some platforms do not set up DNS - name resolution
 if ! host -t a google.com 
 then 
 cat > /etc/resolv.conf << EOF
@@ -18,6 +25,7 @@ nameserver 8.8.8.8
 nameserver 8.8.4.4
 EOF
 fi
+}
 
 install_software() {
   apt-get update 
@@ -96,7 +104,7 @@ create database ${site}wp;
 GRANT ALL PRIVILEGES ON ${site}wp.* TO '${site}wp'@'localhost';
 FLUSH PRIVILEGES;
 EOF
-   mysql < /tmp/makeusers.sql   
+   mysql -u root -p < /tmp/makeusers.sql   
    configwp $site 
    sudo -u ncfisher -i -- bash /tmp/configwp.sh
    vhost-setup $Domain $site $TARGET/$WPDIR
@@ -104,7 +112,12 @@ done
 
 }
 
+### Note, there are a few bugs when run on some platforms, the commands fail
+### If configuring multiple sites, the add_shell should only be run once.
+### TODO: put wrappers and conditionals around each.
+### TODO: wp commands are failing and the database set up does not work
 
+#dnsconfig
 #install_software
 download_wp
 # add_shell
