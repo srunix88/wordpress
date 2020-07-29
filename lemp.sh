@@ -1,4 +1,6 @@
 #!/bin/bash
+# from the guide posted here:
+# https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-with-lemp-on-ubuntu-18-04
 # Run as root
 
 #Just the raw commands
