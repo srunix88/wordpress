@@ -2,12 +2,9 @@ server {
 	listen 80
 	listen [::]:80 
 
-	server_name mysite.com www.mysite.com; # Managed by SpinupWP
+	server_name mysite.com www.mysite.com; # 
 
-	ssl_certificate /etc/letsencrypt/live/www.mysite.com/fullchain.pem; # Managed by SpinupWP
-	ssl_certificate_key /etc/letsencrypt/live/www.mysite.com/privkey.pem; # Managed by SpinupWP
-
-	root /sites/www.mysite.com/files/;
+	root /var/www/html/;
 
 	index index.html index.php;
 
