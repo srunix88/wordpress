@@ -29,3 +29,16 @@ apt install php-curl
  Finish the WP setup of the site.
  
  
+Add any additional values to wp-config.php such as:
+
+define('WP_PROXY_HOST', 'xx.xx.xx.xx');
+define('WP_PROXY_PORT', '7070');
+define('WP_PROXY_BYPASS_HOSTS', 'localhost', '*.mydomain.com');
+/* uncomment when you need to troubleshoot. file is located in wp-content/debug.log 
+
+define( 'WP_DEBUG', true );
+define( 'WP_DEBUG_LOG', true );
+
+Turn off Debugging when you don't have errors to resolve.
+
+*/
